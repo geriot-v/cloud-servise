@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/cloud_db
+    username: cloud_user
+    password: ${DB_PASSWORD:09Area}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+app:
+  file-storage:
+    path: /app/uploads

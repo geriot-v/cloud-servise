@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /cloud
+
+spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:cloud_db}
+    username: ${DB_USERNAME:cloud_user}
+    password: ${DB_PASSWORD:09Area}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: ${SHOW_SQL:true}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  sql:
+    init:
+      mode: always
+      platform: postgres
+
+app:
+  file-storage:
+    path: ${FILE_STORAGE_PATH:./uploads}
+  token:
+    expiration-hours: ${TOKEN_EXPIRATION_HOURS:24}
+
+logging:
+  level:
+    com.example.cloud: ${LOG_LEVEL:INFO}

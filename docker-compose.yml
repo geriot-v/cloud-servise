@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  cloud-app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=cloud_db
+      - DB_USERNAME=cloud_user
+      - DB_PASSWORD=${DB_PASSWORD}
+      - FILE_STORAGE_PATH=/app/uploads
+      - TOKEN_EXPIRATION_HOURS=24
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - file_storage:/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/cloud/login || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=cloud_db
+      - POSTGRES_USER=cloud_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloud_user -d cloud_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  file_storage:
+  postgres_data:
